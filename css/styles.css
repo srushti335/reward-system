@@ -1,0 +1,134 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header, footer {
+    background: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+header .container, footer .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+main {
+    padding: 20px 0;
+}
+
+h1, h2 {
+    margin-bottom: 20px;
+}
+
+.input, .textarea, .button {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.note-review-animation {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+.note-review-animation:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.gamification-display {
+    padding: 10px;
+    /* background: #007bff; */
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    /* NEW: Ensure no border or outline */
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode header, body.dark-mode footer {
+    background: #1e1e1e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .button {
+    background-color: #1e88e5;
+}
+
+body.dark-mode .button:hover {
+    background-color: #1565c0;
+}
+
+body.dark-mode .note-review-animation {
+    background: #1e1e1e;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
+/* Quill editor styles */
+.editor {
+    height: 200px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #fff;
+}
+
+/* Quill toolbar customization */
+.ql-toolbar {
+    border-radius: 5px 5px 0 0;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+}
+
+.ql-container {
+    border-radius: 0 0 5px 5px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
