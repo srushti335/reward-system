@@ -41,11 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
         gamification.addNoteCreatedXP();
         // refresh notes display
         loadNotes();
+
+        // NEW: Clear the editor fields after saving
+        document.getElementById('note-heading').value = '';
+        quill.root.innerHTML = '';
+        document.getElementById('toggle-review').checked = true;
     });
     
     async function loadNotes() {
-        // Retrieve notes and render them with a countdown timer, review button, connection toggle,
-        // and manual schedule adjustment buttons.
         const notes = await db.getNotes();
         const container = document.getElementById('notes-container');
         container.innerHTML = '';
@@ -53,16 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
             let countdownHTML = '';
             if (note.nextReview) {
                 const diff = new Date(note.nextReview) - Date.now();
-                if(diff > 0) {
+                if (diff > 0) {
                     countdownHTML = `<div id="countdown-${note.id}" class="countdown" data-next-review="${new Date(note.nextReview).getTime()}">Calculating...</div>`;
                 } else {
-                    // When due, show "Review Now" button alongside due message.
                     countdownHTML = `<div id="countdown-${note.id}" class="countdown" data-next-review="${new Date(note.nextReview).getTime()}">Review due! <button class="review-now" data-noteid="${note.id}">Review Now</button></div>`;
                 }
             } else {
                 countdownHTML = `<div class="countdown">No review scheduled</div>`;
             }
-            // NEW: Manual adjustment controls always visible for each note.
+
+            // NEW: Handle cases where content is missing or improperly formatted
+            let content = note.content || 'No content available';
+            if (!content.startsWith('<')) {
+                content = `<p>${content}</p>`;
+            }
+
             const manualControls = `
                 <div class="manual-controls">
                     <button class="modify-schedule" data-noteid="${note.id}" data-direction="back">Decrease Interval</button>
@@ -72,18 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
             let noteEl = document.createElement('div');
             noteEl.classList.add('note-review-animation');
             noteEl.innerHTML = `
-                <h3>${note.heading}</h3>
-                <p>${note.content}</p>
+                <h3>${note.heading || 'Untitled Note'}</h3>
+                <div>${content}</div>
                 ${countdownHTML}
                 ${manualControls}
                 <button class="toggle-connections" data-noteid="${note.id}">Show Connections</button>
                 <div class="connections" style="display:none;">
-                    ${note.connections.length ? note.connections.join(', ') : 'No connections'}
+                    ${note.connections && note.connections.length ? note.connections.join(', ') : 'No connections'}
                 </div>
                 <div id="review-interface-${note.id}" class="review-interface"></div>
             `;
             container.appendChild(noteEl);
         });
+
         // Attach event listeners for connection toggles
         document.querySelectorAll('.toggle-connections').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -175,24 +184,26 @@ async function handleReviewFeedback(noteId, rating) {
     const notes = await db.getNotes();
     let note = notes.find(n => n.id == noteId);
     if (!note) return;
-    
-    // Log performance data (stub) and update gamification XP if needed.
+
+    // Log performance data and update the review schedule
     reviewScheduler.adjustSchedule({ note: note, rating: rating, time: Date.now() });
+
+    // NEW: Ensure XP is updated based on the rating
     gamification.updateXPFromReview(rating);
-    
-    // Remove the review interface after feedback.
+
+    // Remove the review interface after feedback
     document.getElementById(`review-interface-${noteId}`).innerHTML = '';
-    
+
     // For a "Hard" rating, reset the schedule (starting back at slot 0)
-    // For "Easy" or "Medium", leave reviewCount unchanged so schedule advances.
+    // For "Easy" or "Medium", leave reviewCount unchanged so schedule advances
     if (rating === 1) {
         note.reviewCount = 0;
     }
-    
-    // Re-schedule so that nextReview is updated based on reviewCount.
+
+    // Re-schedule so that nextReview is updated based on reviewCount
     await reviewScheduler.scheduleReview(note);
-    
-    // Retrieve the updated note from DB and update its countdown display.
+
+    // Retrieve the updated note from DB and update its countdown display
     note = (await db.getNotes()).find(n => n.id == noteId);
     updateCountdownForNote(note);
 }

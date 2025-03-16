@@ -41,6 +41,7 @@ const gamification = (function () {
             xpGain = 5;
         }
         xp += xpGain;
+        console.log(`XP updated by ${xpGain}. Total XP: ${xp}`);
         checkLevel();
         updateDisplay();
     }
