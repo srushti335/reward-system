@@ -132,3 +132,45 @@ body.dark-mode .note-review-animation {
     border: 1px solid #ccc;
     border-top: none;
 }
+
+/* Floating toolbar styles */
+.ql-toolbar.ql-floating {
+    position: fixed; /* Change to fixed positioning */
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: none;
+    z-index: 1000;
+    padding: 8px;
+    transition: all 0.2s ease; /* Smooth transitions */
+    min-width: fit-content;
+    max-width: 100%;
+}
+
+.ql-toolbar.ql-floating .ql-formats {
+    margin-right: 10px;
+}
+
+/* Dark mode support for floating toolbar */
+body.dark-mode .ql-toolbar.ql-floating {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-mode .ql-toolbar.ql-floating button,
+body.dark-mode .ql-toolbar.ql-floating select {
+    color: #e0e0e0;
+    filter: invert(1);
+}
+
+/* Hide the default toolbar */
+.ql-toolbar:not(.ql-floating) {
+    display: none;
+}
+
+/* Ensure editor takes full space without default toolbar */
+.ql-container.ql-snow {
+    border-top: 1px solid #ccc;
+    border-radius: 5px;
+}

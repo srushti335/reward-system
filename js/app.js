@@ -3,18 +3,92 @@
 let quill;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Quill editor
+    // Create floating toolbar element with specific toolbar options
+    const toolbarElement = document.createElement('div');
+    toolbarElement.id = 'floating-toolbar';
+    toolbarElement.className = 'ql-toolbar ql-floating';
+    toolbarElement.innerHTML = `
+        <span class="ql-formats">
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+        </span>
+        <span class="ql-formats">
+            <select class="ql-header">
+                <option value="1">Heading 1</option>
+                <option value="2">Heading 2</option>
+                <option value="3">Heading 3</option>
+                <option selected>Normal</option>
+            </select>
+        </span>
+    `;
+    document.body.appendChild(toolbarElement);
+
+    // Initialize Quill with custom toolbar
     quill = new Quill('#note-content-editor', {
         theme: 'snow',
         placeholder: 'Type your note here...',
         modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline'], // Formatting buttons
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Lists
-                [{ 'header': [1, 2, 3, false] }], // Headings
-                ['clean'] // Remove formatting
-            ]
+            toolbar: {
+                container: '#floating-toolbar',
+            }
         }
+    });
+
+    // Show/hide toolbar on selection change using window.getSelection() with a forced layout update
+    quill.on('selection-change', function (range, oldRange, source) {
+        const toolbar = document.getElementById('floating-toolbar');
+        
+        if (range && range.length > 0) {
+            // Temporarily display toolbar to measure its dimensions
+            toolbar.style.display = 'block';
+            // Use requestAnimationFrame so that the layout is updated
+            requestAnimationFrame(() => {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const rect = selection.getRangeAt(0).getBoundingClientRect();
+                    const margin = 10;
+                    // Position the toolbar above the selection (its bottom edge will align with 
+                    // the top of the selection, leaving a margin)
+                    let top = rect.top - toolbar.offsetHeight - margin;
+                    // If top is too high (off-screen), place toolbar below the selection instead
+                    if (top < margin) {
+                        top = rect.bottom + margin;
+                    }
+                    let left = rect.left;
+                    const viewportWidth = window.innerWidth;
+                    if (left + toolbar.offsetWidth > viewportWidth) {
+                        left = viewportWidth - toolbar.offsetWidth - margin;
+                    }
+                    if (left < margin) {
+                        left = margin;
+                    }
+                    toolbar.style.top = `${top}px`;
+                    toolbar.style.left = `${left}px`;
+                }
+            });
+        } else {
+            toolbar.style.display = 'none';
+        }
+    });
+
+    // Hide toolbar when clicking outside the editor
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.ql-editor') && !e.target.closest('.ql-toolbar')) {
+            document.getElementById('floating-toolbar').style.display = 'none';
+        }
+    });
+
+    // NEW: Add dark mode toggle functionality
+    const darkModeButton = document.getElementById('toggle-dark-mode');
+    darkModeButton.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        darkModeButton.innerText = isDarkMode ? 'Light Mode' : 'Dark Mode';
     });
 
     const saveButton = document.getElementById('save-note');
