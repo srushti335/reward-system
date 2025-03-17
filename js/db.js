@@ -46,12 +46,24 @@ const db = (function () {
             request.onerror = (e) => reject(e);
         });
     }
+
+    async function deleteNoteFromDB(noteId) {
+        await openDB(); // Ensure database is open
+        return new Promise((resolve, reject) => {
+            const tx = database.transaction('notes', 'readwrite');
+            // Cast noteId to Number to match key type.
+            tx.objectStore('notes').delete(Number(noteId));
+            tx.oncomplete = () => resolve();
+            tx.onerror = (e) => reject(e);
+        });
+    }
     
     // Expose other db functions as needed
     
     return {
         saveNote,
-        getNotes
+        getNotes,
+        deleteNoteFromDB
     };
 })();
 
