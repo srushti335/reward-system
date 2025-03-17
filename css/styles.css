@@ -120,6 +120,12 @@ body.dark-mode .note-review-animation {
     background: #fff;
 }
 
+/* Change the appearance of the bottom text editor */
+.ql-editor {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
 /* Quill toolbar customization */
 .ql-toolbar {
     border-radius: 5px 5px 0 0;
