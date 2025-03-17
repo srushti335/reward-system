@@ -39,6 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // NEW: Add keyboard binding for Markdown-like heading shortcuts.
+    quill.keyboard.addBinding({
+        key: 32,               // space key
+        collapsed: true,
+        prefix: /^#{1,3}$/     // Matches "#" or "##" or "###"
+    }, function(range, context) {
+        // Determine header level from number of '#' characters
+        const headerLevel = context.prefix.length; // '#' -> 1, '##' -> 2, etc.
+        // Delete the '#' characters before the cursor.
+        quill.deleteText(range.index - context.prefix.length, context.prefix.length);
+        // Apply header format to current line.
+        quill.formatLine(range.index - context.prefix.length, 1, { header: headerLevel });
+    });
+
     // Revert selection-change handler to previous version:
     quill.on('selection-change', function (range) {
         const toolbar = document.getElementById('floating-toolbar');
@@ -67,14 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             toolbar.style.display = 'none';
-        }
-    });
-
-    // NEW: Listen for text changes and hide the toolbar if the selection is collapsed/empty
-    quill.on('text-change', function(delta, oldDelta, source) {
-        let sel = quill.getSelection();
-        if (!sel || sel.length === 0) {
-            document.getElementById('floating-toolbar').style.display = 'none';
         }
     });
 
@@ -353,6 +359,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Run app tests if defined
     window.runAppTests && window.runAppTests();
+    
+    // After initializing Quill and appending the floating toolbar, add:
+    const headerSelect = document.querySelector('.ql-header');
+    if(headerSelect){
+        headerSelect.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    // After the existing code that initializes Quill and the selection-change handler, add:
+
+    quill.root.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace') {
+            // Allow the deletion to occur, then check the selection immediately
+            setTimeout(() => {
+                let sel = quill.getSelection();
+                if (!sel || sel.length === 0) {
+                    document.getElementById('floating-toolbar').style.display = 'none';
+                }
+            }, 0);
+        }
+    });
 });
 
 // ...existing code...
