@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Show/hide floating toolbar on selection change
+    // Revert selection-change handler to previous version:
     quill.on('selection-change', function (range) {
         const toolbar = document.getElementById('floating-toolbar');
         if (range && range.length > 0) {
@@ -67,6 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             toolbar.style.display = 'none';
+        }
+    });
+
+    // NEW: Listen for text changes and hide the toolbar if the selection is collapsed/empty
+    quill.on('text-change', function(delta, oldDelta, source) {
+        let sel = quill.getSelection();
+        if (!sel || sel.length === 0) {
+            document.getElementById('floating-toolbar').style.display = 'none';
         }
     });
 

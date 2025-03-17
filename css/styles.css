@@ -43,6 +43,10 @@ h1, h2 {
     border-radius: 5px;
 }
 
+.input, .editor {
+    box-sizing: border-box;
+}
+
 .button {
     background-color: #007bff;
     color: #fff;
@@ -138,13 +142,14 @@ body.dark-mode .button:hover {
 }
 
 body.dark-mode .note-review-animation {
-    background: #1e1e1e;
+    background: #1e1e1e;    
     border-color: #333;
     color: #e0e0e0;
 }
 
 /* Quill editor styles */
 .editor {
+    width: 100%; /* Ensure the editor spans the full available width */
     height: 200px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
@@ -211,4 +216,5 @@ body.dark-mode .ql-toolbar.ql-floating select {
 .ql-container.ql-snow {
     border-top: 1px solid #ccc;
     border-radius: 5px;
+    border-top: none;
 }
