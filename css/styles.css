@@ -233,3 +233,76 @@ body.dark-mode .ql-toolbar.ql-floating select {
     background: #007bff;
     transition: width 0.5s ease;
 }
+
+/* Floating notification styles */
+.floating-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 2000;
+    opacity: 1;
+    transition: opacity 1s ease;
+}
+.floating-notification.fade-out {
+    opacity: 0;
+}
+
+/* Notification icon and panel styles */
+#notification-icon {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #007bff;
+    color: #fff;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2000;
+    font-size: 20px;
+}
+#notifications-panel {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none;
+    z-index: 2000;
+    padding: 10px;
+}
+.notification-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+.notification-item button {
+    float: right;
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+}
+#clear-notifs {
+    width: 100%;
+    padding: 5px;
+    background: #f44336;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Constrain the note content width in the review page for better UX readability */
+.review-note {
+    max-width: 600px;
+    margin: 20px auto;  /* centers the note with some vertical spacing */
+    padding: 10px;
+    line-height: 1.5;
+}

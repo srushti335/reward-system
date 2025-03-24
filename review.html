@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Review Notes - Note App</title>
   <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.20.0/dist/tf.min.js"></script> <!-- Add this line -->
 </head>
 <body>
   <header>
@@ -24,7 +25,7 @@
     <section id="reviews-list">
       <h2>Notes Due for Review</h2>
       <div id="reviews-container">
-         <!-- Notes will be loaded here -->
+         <!-- One note will be displayed at a time -->
       </div>
     </section>
   </main>
@@ -33,6 +34,12 @@
       <p>&copy; 2023 Note App</p>
     </div>
   </footer>
+  <!-- NEW: Notification icon and notifications panel -->
+  <div id="notification-icon">🔔</div>
+  <div id="notifications-panel">
+    <div id="notifications-container"></div>
+    <button id="clear-notifs">Clear All</button>
+  </div>
   <script src="js/db.js"></script>
   <script src="js/reviewScheduler.js"></script>
   <script src="js/gamification.js"></script>
