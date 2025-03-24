@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Notes - Note App</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Review Your Notes</h1>
+      <button id="toggle-dark-mode">Dark Mode</button>
+    </div>
+  </header>
+  <main class="container">
+    <section id="review-progress">
+      <h2>Today's Reviews Progress</h2>
+      <div id="progress-bar-container" class="progress-bar-container">
+         <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <p id="progress-text">0% Completed</p>
+    </section>
+    <section id="reviews-list">
+      <h2>Notes Due for Review</h2>
+      <div id="reviews-container">
+         <!-- Notes will be loaded here -->
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container">
+      <p>&copy; 2023 Note App</p>
+    </div>
+  </footer>
+  <script src="js/db.js"></script>
+  <script src="js/reviewScheduler.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/review.js"></script>
+</body>
+</html>
