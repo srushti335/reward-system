@@ -29,20 +29,47 @@
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Changed from center to allow scrolling from top */
+    align-items: center; /* Changed from flex-start to center */
     scroll-snap-align: start;
     scroll-snap-stop: always; /* Forces stopping at each note */
     background: #1a1a1a;
     color: white;
     overflow-y: auto; /* Allow vertical scrolling within note if content is too long */
-    padding: 20px 0; /* Add some vertical padding */
+    padding: 40px 20px; /* Add some vertical padding */
 }
 
 .note-content {
-    max-width: 500px;
-    padding: 20px;
+    max-width: 700px;
     width: 100%;
-    /* Remove text-align: center to improve readability of longer content */
+    padding: 40px 20px;
+    margin: 0 auto;
+    max-height: 90vh; /* Prevent content from touching screen edges */
+    overflow-y: auto; /* Allow scrolling if content is too long */
+}
+
+/* Handle media content */
+.note-content img,
+.note-content video,
+.note-content iframe,
+.note-content embed {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto;
+}
+
+/* Style headings */
+.note-content h2 {
+    text-align: left;
+    margin-bottom: 1em;
+    font-size: 1.8em;
+}
+
+/* Style paragraph text */
+.note-content p {
+    text-align: left;
+    line-height: 1.6;
+    margin-bottom: 1em;
 }
 
 /* Style scrollbar for note-card */
