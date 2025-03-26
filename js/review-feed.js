@@ -1,25 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const feedWrapper = document.querySelector('.feed-wrapper');
     
-    // Sample notes for testing
-    const sampleNotes = [
-        { heading: "Note 1", content: "This is the first note" },
-        { heading: "Note 2", content: "Second note content" },
-        { heading: "Note 3", content: "Third note for review" }
-    ];
+    // Load actual notes from database
+    try {
+        const notes = await db.getNotes();
+        console.log("Loaded notes:", notes.length);
 
-    // Create note cards
-    sampleNotes.forEach(note => {
-        const noteCard = document.createElement('div');
-        noteCard.className = 'note-card';
-        noteCard.innerHTML = `
-            <div class="note-content">
-                <h2>${note.heading}</h2>
-                <p>${note.content}</p>
-            </div>
-        `;
-        feedWrapper.appendChild(noteCard);
-    });
+        // Create note cards for each note
+        notes.forEach(note => {
+            const noteCard = document.createElement('div');
+            noteCard.className = 'note-card';
+            noteCard.innerHTML = `
+                <div class="note-content">
+                    <h2>${note.heading || 'Untitled Note'}</h2>
+                    <div>${note.content || 'No content'}</div>
+                </div>
+            `;
+            feedWrapper.appendChild(noteCard);
+        });
+    } catch (err) {
+        console.error("Error loading notes:", err);
+        feedWrapper.innerHTML = '<div class="note-card"><div class="note-content"><h2>Error</h2><p>Could not load notes</p></div></div>';
+    }
 
     // Navigation arrows functionality
     document.querySelector('.nav-up').addEventListener('click', () => {
