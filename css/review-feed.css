@@ -29,16 +29,38 @@
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Changed from center to allow scrolling from top */
     scroll-snap-align: start;
+    scroll-snap-stop: always; /* Forces stopping at each note */
     background: #1a1a1a;
     color: white;
+    overflow-y: auto; /* Allow vertical scrolling within note if content is too long */
+    padding: 20px 0; /* Add some vertical padding */
 }
 
 .note-content {
     max-width: 500px;
     padding: 20px;
-    text-align: center;
+    width: 100%;
+    /* Remove text-align: center to improve readability of longer content */
+}
+
+/* Style scrollbar for note-card */
+.note-card::-webkit-scrollbar {
+    width: 8px;
+}
+
+.note-card::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.note-card::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.note-card::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 /* Navigation arrows */
