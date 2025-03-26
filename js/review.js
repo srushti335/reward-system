@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   let currentReviewNotes = reviewNotes; // all due notes for this session
   let notifications = [];
 
+  // NEW: Array to track reviewed notes during the session
+  let reviewedNotes = [];
+
   // Function to update the progress bar.
   function updateProgress() {
     const percentage = totalDue === 0 ? 100 : Math.round((completedCount / totalDue) * 100);
@@ -43,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function displayNote(index) {
     reviewsContainer.innerHTML = ""; // clear container
     if (currentReviewNotes.length === 0) {
-      reviewsContainer.innerHTML = "<p>All reviews completed!</p>";
+      displayAllReviewsComplete();
       return;
     }
     // Clamp index in valid range
@@ -67,6 +70,38 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
     `;
     reviewsContainer.innerHTML = noteCountHTML + noteContentHTML;
+  }
+
+  // Function to display the list of reviewed notes
+  function displayReviewedNotes() {
+    reviewsContainer.innerHTML = "<h2>Reviewed Notes</h2>";
+    if (reviewedNotes.length === 0) {
+        reviewsContainer.innerHTML += "<p>No notes were reviewed in this session.</p>";
+    } else {
+        reviewedNotes.forEach(note => {
+            reviewsContainer.innerHTML += `
+                <div class="reviewed-note">
+                    <h3>${note.heading || 'Untitled Note'}</h3>
+                    <div>${note.content}</div>
+                </div>
+            `;
+        });
+    }
+    reviewsContainer.innerHTML += `<button id="back-to-progress" class="button">Back to Progress</button>`;
+    document.getElementById('back-to-progress').addEventListener('click', () => {
+        displayAllReviewsComplete();
+    });
+  }
+
+  // Function to display "All reviews complete" message with the button
+  function displayAllReviewsComplete() {
+    reviewsContainer.innerHTML = `
+        <p>All reviews completed!</p>
+        <button id="view-reviewed-notes" class="button">View Reviewed Notes</button>
+    `;
+    document.getElementById('view-reviewed-notes').addEventListener('click', () => {
+        displayReviewedNotes();
+    });
   }
 
   // Initial display.
@@ -132,18 +167,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         addNotification(`Note "${note.heading || 'Untitled'}" reviewed as ${rating === 3 ? 'Easy' : rating === 2 ? 'Medium' : 'Hard'}.`);
 
-        // Remove reviewed note and verify remaining count
-        currentReviewNotes.splice(noteIndex, 1);
-        console.log("Remaining review notes:", currentReviewNotes.length);
+        // Add the note to the reviewedNotes array
+        if (!reviewedNotes.some(n => n.id === note.id)) {
+            reviewedNotes.push(note);
+        }
 
-        // Display the next note or show completion message
-        if (currentReviewNotes.length === 0) {
-            reviewsContainer.innerHTML = "<p>All reviews completed!</p>";
-        } else {
-            if (currentIndex >= currentReviewNotes.length) {
-                currentIndex = currentReviewNotes.length - 1;
-            }
+        // Automatically move to the next note
+        if (currentIndex < currentReviewNotes.length - 1) {
+            currentIndex++;
             displayNote(currentIndex);
+        } else {
+            displayAllReviewsComplete();
         }
     } catch (err) {
         console.error("Error processing review feedback:", err);
@@ -195,21 +229,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // NEW: Polling to check for new due notes and notify the user.
+  // NEW: Track IDs of notes already reviewed or notified
+  let reviewedNoteIds = new Set();
+  let notifiedNoteIds = new Set();
+
+  // Polling to check for new due notes and notify the user.
   setInterval(async () => {
-    let updatedNotes = await db.getNotes();
-    const now = new Date();
-    updatedNotes.forEach(note => {
-      if (note.nextReview && new Date(note.nextReview) <= now) {
-         const exists = currentReviewNotes.find(n => n.id == note.id);
-         if (!exists) {
-            currentReviewNotes.push(note);
-            addNotification(`New note "${note.heading || 'Untitled'}" added to review session.`);
-            updateProgress();
-         }
-      }
-    });
-  }, 15000); // check every 15 seconds
+    try {
+        let updatedNotes = await db.getNotes();
+        const now = new Date();
+
+        updatedNotes.forEach(note => {
+            if (note.nextReview && new Date(note.nextReview) <= now) {
+                // Check if the note is already reviewed or notified
+                if (!reviewedNoteIds.has(note.id) && !notifiedNoteIds.has(note.id)) {
+                    // Add the note to the notification list
+                    currentReviewNotes.push(note);
+                    notifiedNoteIds.add(note.id);
+                    addNotification(`New note "${note.heading || 'Untitled'}" added to review session.`);
+                    updateProgress();
+                }
+            }
+        });
+    } catch (err) {
+        console.error("Error during polling for new due notes:", err);
+    }
+  }, 15000); // Check every 15 seconds
 
   // NEW: Toggle notifications panel when clicking the notification icon.
   const notifIcon = document.getElementById('notification-icon');
@@ -223,4 +268,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // BroadcastChannel for receiving due note notifications
+  const broadcastChannel = new BroadcastChannel('note-due-channel');
+
+  // Function to play a ding sound
+  function playDingSound() {
+      const audio = new Audio('ding.mp3'); // Ensure ding.mp3 is in the same directory
+      audio.play();
+  }
+
+  // Listen for messages from the BroadcastChannel
+  broadcastChannel.onmessage = (event) => {
+      if (event.data.type === 'note-due') {
+          const { noteId, heading, content } = event.data;
+          console.log(`Received due note notification: ${noteId}`);
+          addNotification(`New note due: "${heading}"`);
+          playDingSound();
+
+          // Add the note to the current review session if not already present
+          if (!currentReviewNotes.some(note => note.id === noteId)) {
+              currentReviewNotes.push({ id: noteId, heading, content });
+              updateProgress();
+          }
+      }
+  };
 });

@@ -1,5 +1,3 @@
-// ...existing code...
-
 let quill;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </select>
         </span>
     `;
+    
     document.body.appendChild(toolbarElement);
 
     // Initialize Quill with custom toolbar
@@ -383,4 +382,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ...existing code...
+// BroadcastChannel for notifying due notes
+const broadcastChannel = new BroadcastChannel('note-due-channel');
+
+// Function to notify when a note becomes due
+function notifyDueNotes() {
+    const now = new Date();
+    db.getNotes().then(notes => {
+        notes.forEach(note => {
+            if (note.nextReview && new Date(note.nextReview) <= now) {
+                broadcastChannel.postMessage({
+                    type: 'note-due',
+                    noteId: note.id,
+                    heading: note.heading || 'Untitled Note',
+                    content: note.content || 'No content available'
+                });
+                console.log(`Broadcasted due note: ${note.id}`);
+            }
+        });
+    });
+}
+
+// Check for due notes every 15 seconds
+setInterval(notifyDueNotes, 15000);
