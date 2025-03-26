@@ -29,22 +29,24 @@
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center; /* Changed from flex-start to center */
+    align-items: center;
     scroll-snap-align: start;
     scroll-snap-stop: always; /* Forces stopping at each note */
     background: #1a1a1a;
     color: white;
     overflow-y: auto; /* Allow vertical scrolling within note if content is too long */
-    padding: 40px 20px; /* Add some vertical padding */
+    padding: 0; /* Remove padding from note-card */
 }
 
 .note-content {
     max-width: 700px;
     width: 100%;
-    padding: 40px 20px;
-    margin: 0 auto;
-    max-height: 90vh; /* Prevent content from touching screen edges */
+    padding: 20px;  /* Reduced padding */
+    margin: auto;   /* This helps with perfect vertical centering */
+    max-height: 80vh; /* Slightly reduced to ensure even spacing */
     overflow-y: auto; /* Allow scrolling if content is too long */
+    display: flex;
+    flex-direction: column;
 }
 
 /* Handle media content */
@@ -61,7 +63,7 @@
 /* Style headings */
 .note-content h2 {
     text-align: left;
-    margin-bottom: 1em;
+    margin: 0 0 1em 0; /* Remove top margin */
     font-size: 1.8em;
 }
 
