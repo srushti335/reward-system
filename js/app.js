@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </select>
         </span>
     `;
-    
+
     document.body.appendChild(toolbarElement);
 
     // Initialize Quill with custom toolbar
@@ -53,32 +53,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Revert selection-change handler to previous version:
+    // Listen for selection changes in the Quill editor.
     quill.on('selection-change', function (range) {
         const toolbar = document.getElementById('floating-toolbar');
+        
+        // If there is a selection (non-collapsed range with some content selected)
         if (range && range.length > 0) {
+            // Show the floating toolbar.
             toolbar.style.display = 'block';
+
+            // Use requestAnimatiI want to use go and wailsonFrame to ensure the selection has been properly rendered.
             requestAnimationFrame(() => {
                 const selection = window.getSelection();
+                
+                // Proceed if there's at least one range in the current selection.
                 if (selection.rangeCount > 0) {
+                    // Get the bounding rectangle for the first range of the selection.
                     const rect = selection.getRangeAt(0).getBoundingClientRect();
-                    const margin = 10;
+                    const margin = 10;  // Margin to avoid edge clipping.
+                    
+                    // Calculate the initial top position above the selection.
                     let top = rect.top - toolbar.offsetHeight - margin;
+                    
+                    // If not enough space above, position the toolbar below the selection.
                     if (top < margin) {
                         top = rect.bottom + margin;
                     }
+                    
+                    // Initially align the toolbar's left with the selection's left.
                     let left = rect.left;
                     const viewportWidth = window.innerWidth;
+                    
+                    // Adjust left position if toolbar overflows the right edge of the viewport.
                     if (left + toolbar.offsetWidth > viewportWidth) {
                         left = viewportWidth - toolbar.offsetWidth - margin;
                     }
+                    
+                    // Ensure the toolbar doesn't go off the left edge.
                     if (left < margin) { 
                         left = margin; 
                     }
+                    
+                    // Apply the calculated position to the toolbar.
                     toolbar.style.top = `${top}px`;
                     toolbar.style.left = `${left}px`;
                 }
             });
         } else {
+            // Hide the toolbar if selection is collapsed or absent.
             toolbar.style.display = 'none';
         }
     });
