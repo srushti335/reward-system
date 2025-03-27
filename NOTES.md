@@ -79,3 +79,4 @@
 
 
 # Review2 html
+nvm we will take care of that in the future. in our review feed, I want to play a place button on the right side (middle). Pressing that button will lead to a new sidebard to open in the same page. 

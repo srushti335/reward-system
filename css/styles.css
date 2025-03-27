@@ -1,16 +1,17 @@
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9;
-    color: #333;
+    background-color: #121212;  /* Dark mode by default */
+    color: #e0e0e0;
     transition: background-color 0.3s, color 0.3s;
 }
 
 header, footer {
-    background: #333;
-    color: #fff;
-    padding: 10px 0;
+    background: #1e1e1e;
+    color: #e0e0e0;
+    padding: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 header .container, footer .container {
@@ -20,9 +21,9 @@ header .container, footer .container {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1000px;  /* Slightly narrower for better readability */
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
 main {
@@ -47,52 +48,80 @@ h1, h2 {
     box-sizing: border-box;
 }
 
+/* Modern button style */
 .button {
-    background-color: #007bff;
+    background-color: #2563eb;
     color: #fff;
     border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.button:active {
+    transform: translateY(0);
 }
 
 .notes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    padding: 24px 0;
 }
 
+/* New modern card style */
 .note-review-animation {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s;
+    background: #242424;
+    border: none;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
+    overflow: hidden;  /* Add this to prevent content overflow */
 }
 
 .note-review-animation:hover {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Add responsive image handling for saved notes */
+.note-review-animation img,
+.note-review-animation video,
+.note-review-animation iframe,
+.note-review-animation embed {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto;
+    object-fit: contain;
+}
+
+/* New accent colors for interactive elements */
 .gamification-display {
-    padding: 10px;
-    /* background: #007bff; */
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 12px;
+    padding: 16px;
+    font-weight: 500;
     color: #fff;
-    border-radius: 5px;
     text-align: center;
-    /* NEW: Ensure no border or outline */
     border: none;
     outline: none;
     box-shadow: none;
 }
 
-/* NEW: Style for the vertical 3-dot note options */
-.note-options {
+/* Scope the 3-dot menu to saved notes only */
+#notes-container .note-options,
+.notes-grid .note-options {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -100,7 +129,9 @@ h1, h2 {
     font-size: 20px;
     user-select: none;
 }
-.note-options .note-dropdown {
+
+#notes-container .note-dropdown,
+.notes-grid .note-dropdown {
     position: absolute;
     top: 100%;
     right: 0;
@@ -110,7 +141,9 @@ h1, h2 {
     display: none;
     z-index: 1100;
 }
-.note-options .note-dropdown button {
+
+#notes-container .note-dropdown button,
+.notes-grid .note-dropdown button {
     background: none;
     border: none;
     padding: 5px 10px;
@@ -118,7 +151,9 @@ h1, h2 {
     text-align: left;
     cursor: pointer;
 }
-.note-options .note-dropdown button:hover {
+
+#notes-container .note-dropdown button:hover,
+.notes-grid .note-dropdown button:hover {
     background-color: #f0f0f0;
 }
 
@@ -147,14 +182,36 @@ body.dark-mode .note-review-animation {
     color: #e0e0e0;
 }
 
+/* Light mode overrides */
+body:not(.dark-mode) {
+    background-color: #f8fafc;
+    color: #1a1a1a;
+}
+
+body:not(.dark-mode) header,
+body:not(.dark-mode) footer {
+    background: #fff;
+    color: #1a1a1a;
+}
+
+body:not(.dark-mode) .note-review-animation {
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
 /* Quill editor styles */
 .editor {
     width: 100%; /* Ensure the editor spans the full available width */
     height: 200px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background: #fff;
+    border: 1px solid #333;
+    border-radius: 12px;
+    background: #242424;
+    transition: border-color 0.2s;
+}
+
+.editor:focus-within {
+    border-color: #2563eb;
 }
 
 /* Change the appearance of the bottom text editor */
