@@ -87,6 +87,7 @@ h1, h2 {
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;  /* Add this to prevent content overflow */
+    cursor: pointer;
 }
 
 .note-review-animation:hover {
@@ -362,4 +363,116 @@ body.dark-mode .ql-toolbar.ql-floating select {
     margin: 20px auto;  /* centers the note with some vertical spacing */
     padding: 10px;
     line-height: 1.5;
+}
+
+/* Popup overlay styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-out;
+}
+
+.popup-content {
+    background: #242424;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s ease-out;
+}
+
+/* Active states */
+.popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.popup-overlay.active .popup-content {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.popup-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Popup edit button */
+.popup-edit {
+    position: absolute;
+    top: 15px;
+    right: 60px; /* Position it to the left of close button */
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.popup-edit:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Editor mode styles */
+.popup-content.editing .content-view {
+    display: none;
+}
+
+.popup-content .editor-container {
+    display: none;
+}
+
+.popup-content.editing .editor-container {
+    display: block;
+}
+
+/* Save button */
+.popup-save {
+    margin-top: 15px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: none;
+}
+
+.popup-content.editing .popup-save {
+    display: block;
 }

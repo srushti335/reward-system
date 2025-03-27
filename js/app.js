@@ -155,6 +155,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3>${note.heading || 'Untitled Note'}</h3>
                 <div>${note.content}</div>
             `;
+
+            // Add click handler for the note
+            noteEl.addEventListener('click', (e) => {
+                // Don't open popup if clicking options menu
+                if (e.target.closest('.note-options')) return;
+                
+                // Create and show popup
+                const popup = document.createElement('div');
+                popup.className = 'popup-overlay';
+                popup.innerHTML = `
+                    <div class="popup-content">
+                        <button class="popup-close">×</button>
+                        <button class="popup-edit">Edit</button>
+                        <div class="content-view">
+                            <h2>${note.heading || 'Untitled Note'}</h2>
+                            <div>${note.content}</div>
+                        </div>
+                        <div class="editor-container"></div>
+                        <button class="popup-save">Save Changes</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(popup);
+
+                // Force browser reflow before adding active class
+                popup.getBoundingClientRect();
+
+                // Add active class in next frame
+                requestAnimationFrame(() => {
+                    popup.classList.add('active');
+                });
+
+                // Setup edit functionality
+                const popupContent = popup.querySelector('.popup-content');
+                const editButton = popup.querySelector('.popup-edit');
+                const saveButton = popup.querySelector('.popup-save');
+                const editorContainer = popup.querySelector('.editor-container');
+                let quillEditor = null;
+
+                editButton.addEventListener('click', () => {
+                    if (!quillEditor) {
+                        quillEditor = createQuillEditor(editorContainer, note.content);
+                    }
+                    popupContent.classList.add('editing');
+                });
+
+                saveButton.addEventListener('click', async () => {
+                    const updatedContent = quillEditor.root.innerHTML;
+                    note.content = updatedContent;
+                    await db.saveNote(note);
+                    popupContent.classList.remove('editing');
+                    popup.querySelector('.content-view div').innerHTML = updatedContent;
+                    loadNotes(); // Refresh the notes list
+                });
+
+                // Close handlers
+                const closePopup = () => {
+                    popup.classList.remove('active');
+                    setTimeout(() => popup.remove(), 300);
+                };
+
+                popup.querySelector('.popup-close').addEventListener('click', closePopup);
+                popup.addEventListener('click', (e) => {
+                    if (e.target === popup) closePopup();
+                });
+            });
+
             container.appendChild(noteEl);
         });
 
@@ -206,4 +273,41 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Failed to delete note.");
         }
     }
+
+    // Play button and sidebar functionality
+    const playButton = document.getElementById('play-button');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarClose = document.getElementById('sidebar-close');
+
+    playButton.addEventListener('click', () => {
+        sidebar.classList.add('open');
+    });
+
+    sidebarClose.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!sidebar.contains(e.target) && e.target !== playButton) {
+            sidebar.classList.remove('open');
+        }
+    });
 });
+
+function createQuillEditor(container, content) {
+    // Create Quill editor
+    const editor = new Quill(container, {
+        theme: 'snow',
+        modules: {
+            toolbar: {
+                container: '#floating-toolbar'
+            }
+        }
+    });
+    
+    // Set content
+    editor.root.innerHTML = content;
+    
+    return editor;
+}
